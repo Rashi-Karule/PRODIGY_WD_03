@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(to right, #fce4ec, #e1bee7);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #6a1b9a;
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 10px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: #fff;
+      border-radius: 15px;
+      font-size: 2.5rem;
+      color: #4a148c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+    }
+
+    .cell:hover {
+      background: #f3e5f5;
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      color: #6a1b9a;
+    }
+
+    .reset-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #ab47bc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+
+    .reset-btn:hover {
+      background-color: #8e24aa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+  <div class="board" id="board"></div>
+  <div class="status" id="status">Next Player: X</div>
+  <button class="reset-btn" onclick="resetGame()">🔄 Restart</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const statusText = document.getElementById('status');
+    let currentPlayer = 'X';
+    let gameActive = true;
+    const cells = Array(9).fill(null);
+
+    const winningCombinations = [
+      [0,1,2],[3,4,5],[6,7,8], // rows
+      [0,3,6],[1,4,7],[2,5,8], // columns
+      [0,4,8],[2,4,6]          // diagonals
+    ];
+
+    function createBoard() {
+      board.innerHTML = '';
+      cells.fill(null);
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.addEventListener('click', () => handleClick(i));
+        board.appendChild(cell);
+      }
+    }
+
+    function handleClick(index) {
+      if (!gameActive || cells[index]) return;
+      cells[index] = currentPlayer;
+      board.children[index].textContent = currentPlayer;
+
+      if (checkWinner()) {
+        statusText.textContent = `🎉 Winner: ${currentPlayer}`;
+        gameActive = false;
+      } else if (cells.every(cell => cell)) {
+        statusText.textContent = "It's a draw! 🤝";
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        statusText.textContent = `Next Player: ${currentPlayer}`;
+      }
+    }
+
+    function checkWinner() {
+      return winningCombinations.some(combination => {
+        const [a, b, c] = combination;
+        return cells[a] && cells[a] === cells[b] && cells[a] === cells[c];
+      });
+    }
+
+    function resetGame() {
+      currentPlayer = 'X';
+      gameActive = true;
+      statusText.textContent = `Next Player: ${currentPlayer}`;
+      createBoard();
+    }
+
+    createBoard();
+  </script>
+
+</body>
+</html>
